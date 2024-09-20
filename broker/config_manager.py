@@ -106,7 +106,7 @@ class ConfigManager:
             import requests
 
             click.echo(f"Downloading example file from: {source}")
-            return requests.get(source, timeout=60).text
+            return requests.get(source, timeout=60, verify=False).text
         else:
             return source.read_text()
 
@@ -199,26 +199,34 @@ class ConfigManager:
             return nicks[nick]
         return list(nicks.keys())
 
-    def init_config_file(self, chunk=None):
+    def init_config_file(self, chunk=None, _from=None):
         """Check for the existence of the config file and create it if it doesn't exist."""
         if self.interactive_mode and self._settings_path.exists() and not chunk:
             # if the file exists, ask the user if they want to overwrite it
             if (
                 click.prompt(
-                    f"Settings file already exists at {self._settings_path.absolute()}. Overwrite?",
+                    f"Overwrite the settings file at {self._settings_path.absolute()}. Overwrite?",
                     type=click.Choice(["y", "n"]),
                     default="n",
                 )
                 != "y"
             ):
                 return
-        # get the example file from the local repo or GitHub
-        example_path = Path(__file__).parent.parent.joinpath("broker_settings.yaml.example")
         raw_data = None
-        if example_path.exists():
-            raw_data = self._import_config(example_path)
+        if _from:
+            # determine if this is a local file or a URL
+            if Path(_from).exists():
+                raw_data = self._import_config(Path(_from))
+            else:
+                raw_data = self._import_config(_from, is_url=True)
+        # if we still don't have data, get the example file from the local repo or GitHub
         if not raw_data:
-            raw_data = self._import_config(GH_CFG, is_url=True)
+            # get the example file from the local repo or GitHub
+            example_path = Path(__file__).parent.parent.joinpath("broker_settings.yaml.example")
+            if example_path.exists():
+                raw_data = self._import_config(example_path)
+            if not raw_data:
+                raw_data = self._import_config(GH_CFG, is_url=True)
         if not raw_data:
             raise exceptions.ConfigurationError(
                 f"Broker settings file not found at {self._settings_path.absolute()}."

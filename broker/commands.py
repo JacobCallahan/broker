@@ -475,12 +475,15 @@ def restore():
 
 @loggedcli(group=config)
 @click.argument("chunk", type=str, required=False)
-def init(chunk):
+@click.option("--from", "_from", type=str, help="A file path or URL to initialize the config from.")
+def init(chunk=None, _from=None):
     """Initialize the broker configuration file from your local clone or GitHub.
 
     You can also init specific chunks by passing the chunk name.
+    Additionally, if you want to initialize from a file or URL, you can pass the `--from` flag.
+    Keep in mind that the file and url contents need to be valid yaml.
     """
-    ConfigManager(settings.settings_path).init_config_file(chunk)
+    ConfigManager(settings.settings_path).init_config_file(chunk=chunk, _from=_from)
 
 
 @loggedcli(group=config)
