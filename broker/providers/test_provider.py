@@ -1,4 +1,5 @@
 """A test provider for use in unit tests."""
+
 import inspect
 
 from dynaconf import Validator
@@ -26,8 +27,8 @@ class TestProvider(Provider):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.config = settings.TESTPROVIDER.config_value
-        self.foo = settings.TESTPROVIDER.foo
+        self.config = self._settings.TESTPROVIDER.config_value
+        self.foo = self._settings.TESTPROVIDER.foo
 
     def _host_release(self):
         caller_host = inspect.stack()[1][0].f_locals["host"]

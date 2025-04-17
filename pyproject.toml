@@ -57,6 +57,17 @@ hussh = ["hussh>=0.1.7"]
 [project.scripts]
 broker = "broker.commands:cli"
 
+[project.entry-points."broker.ssh.session"]
+ansible-pylibssh = "broker.binds.pylibssh:Session"
+ssh2-python = "broker.binds.ssh2:Session"
+ssh2-python312 = "broker.binds.ssh2:Session"
+hussh = "broker.binds.hussh:Session"
+
+[project.entry-points."broker.ssh.interactive_shell"]
+ansible-pylibssh = "broker.binds.pylibssh:InteractiveShell"
+ssh2-python = "broker.binds.ssh2:InteractiveShell"
+ssh2-python312 = "broker.binds.ssh2:InteractiveShell"
+
 [tool.setuptools]
 platforms = ["any"]
 zip-safe = false
