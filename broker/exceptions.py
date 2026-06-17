@@ -122,3 +122,14 @@ class ScenarioError(BrokerError):
             self.message = message
 
         super().__init__(message=self.message)
+
+
+class InterruptResumeError(Exception):
+    """Raised when a keyboard interrupt is caught and user chooses to resume.
+
+    This is a special exception that should be caught and handled by retrying
+    the interrupted operation. It is NOT a BrokerError and should not be logged
+    as an error.
+    """
+
+    pass
